@@ -1,12 +1,7 @@
 using System;
-using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
-using UnityEditor.PackageManager;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
-
-public class Enemy : MonoBehaviour
+public class Dragon : MonoBehaviour, LivingBeing
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
@@ -18,7 +13,7 @@ public class Enemy : MonoBehaviour
     bool isAttacking = false;
     private Animator anim;
 
-    private int health = 100;
+    private float health = 100;
 
     private string[] animatedStates = {"IdleSimple", "IdleAgressive", "Walk",
     "IdleRestless", "BattleStance", "Bite", "Drakaris", "FlyingFWD", "FlyingAttack", "Hover", "Lands",
@@ -27,6 +22,10 @@ public class Enemy : MonoBehaviour
     private Vector3 lookahead;
     private UnityEngine.UI.Slider healthbar;
 
+    private Transform snout_transform;
+    public GameObject FireballPrefab;
+    private float timer = 5f;
+
     void Start()
     {
         anim = GetComponent<Animator>();
@@ -34,6 +33,9 @@ public class Enemy : MonoBehaviour
         Canvas canvas = GetComponentInChildren<Canvas>();
         healthbar = canvas.GetComponentInChildren<UnityEngine.UI.Slider>();
         healthbar.value = health / 100.0f;
+        snout_transform = GameObject.FindWithTag("Firebreather").transform;
+        Debug.Log("Found snout");
+        Debug.Log(snout_transform);
     }
 
     // Update is called once per frame
@@ -43,14 +45,25 @@ public class Enemy : MonoBehaviour
         Vector3 nest_location = nest.transform.position;
         if (isAlive)
         {
-         FlyTothenOrbit(nest_location);   
+            FlyTothenOrbit(nest_location);
         }
-        TakeDamage((int)(Time.deltaTime * 180));
+        //TakeDamage((int)(Time.deltaTime * 160));
+        timer -= Time.deltaTime;
+       
+        if (timer < 0)
+        {
+            Debug.Log(snout_transform);
+            ShootFireball();
+            timer = 10f;
+        }
     }
 
-    void Circle(Vector3 location, float radius)
+    void ShootFireball()
     {
-
+        GameObject fbo = Instantiate(FireballPrefab, snout_transform.position, Quaternion.identity);
+        Fireball fb = fbo.GetComponent<Fireball>();
+        fb.SetDirection(snout_transform.TransformDirection(Vector3.forward));
+        
     }
 
     void FlyTo(Vector3 location)
@@ -129,7 +142,7 @@ public class Enemy : MonoBehaviour
 
     }
 
-    void TakeDamage(int dam)
+    public void TakeDamage(float dam)
     {
         if (health > dam)
         {

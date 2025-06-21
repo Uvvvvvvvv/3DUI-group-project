@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEditor.PackageManager;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.UIElements;
 
 public class Enemy : MonoBehaviour
@@ -24,11 +25,15 @@ public class Enemy : MonoBehaviour
     "TakeOff", "Die"};
 
     private Vector3 lookahead;
+    private UnityEngine.UI.Slider healthbar;
 
     void Start()
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
+        Canvas canvas = GetComponentInChildren<Canvas>();
+        healthbar = canvas.GetComponentInChildren<UnityEngine.UI.Slider>();
+        healthbar.value = health / 100.0f;
     }
 
     // Update is called once per frame
@@ -36,7 +41,11 @@ public class Enemy : MonoBehaviour
     {
         GameObject nest = GameObject.Find("DragonNest");
         Vector3 nest_location = nest.transform.position;
-        FlyTothenOrbit(nest_location);
+        if (isAlive)
+        {
+         FlyTothenOrbit(nest_location);   
+        }
+        TakeDamage((int)(Time.deltaTime * 180));
     }
 
     void Circle(Vector3 location, float radius)
@@ -46,18 +55,24 @@ public class Enemy : MonoBehaviour
 
     void FlyTo(Vector3 location)
     {
+        /*
+            Fly to the set point with the PurePursuit algo. Will glitch once arrive 
+            recommended instead: FlyToandOrbit
+        */
         Vector3 goal = transform.InverseTransformPoint(location);
         goal.y = 0;
 
         float angle_error = Mathf.Atan2(goal.x, goal.z);
-        //Debug.Log(angle_error * 180 / 3.141);
 
         if (Math.Abs(angle_error) > Math.PI / 2 * 0.7 && !target_locked)
         {
             // Rotate to face the target if target is behind
-            clear_anim();
-            anim.SetBool(Animator.StringToHash("Hover"), true);
-            transform.Rotate(Vector3.up, rotspeed * Time.deltaTime);
+            if (anim.GetCurrentAnimatorStateInfo(0).IsName("IdleSimple"))
+            { 
+                clear_anim();
+                anim.SetBool(Animator.StringToHash("Hover"), true);
+            }
+            transform.Rotate(Vector3.up, rotspeed * Math.Sign(angle_error)* Time.deltaTime);
             return;
         }
 
@@ -66,12 +81,14 @@ public class Enemy : MonoBehaviour
         {
             clear_anim();
             anim.SetBool(Animator.StringToHash("IdleSimple"), true);
-            anim.SetBool(Animator.StringToHash("FlyingFWD"), true);
         }
-
         target_locked = Math.Abs(angle_error) < (Math.PI / 2);
-
-
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("IdleSimple"))
+        {
+            anim.SetBool(Animator.StringToHash("FlyingFWD"), true);
+            anim.SetBool(Animator.StringToHash("IdleSimple"), false);
+        }
+        
         float arc_radius = goal.magnitude / (2 * (float)Math.Sin(angle_error));
         Vector3 v = new Vector3(); v.x = 0; v.y = 0;
         v.z = 20;
@@ -81,11 +98,27 @@ public class Enemy : MonoBehaviour
         transform.Rotate(Vector3.up, 20 / arc_radius * 180 / (float)Math.PI * Time.deltaTime);
     }
 
-    void FlyTothenOrbit(Vector3 location, float radius = 6)
+    void FlyTothenOrbit(Vector3 location, float radius = 6, float dest_height=-1.0f)
     {
+        // Fly to the set location using pure pursuit, then orbit the set point
+        // if height is set, descend/ascend to correct height
+
         Vector3 heading = transform.position - location;
+
+        Vector3 goal = transform.InverseTransformPoint(location);
+        goal.y = 0;
+
+        float angle_error = Mathf.Atan2(goal.x, goal.z);
+
+        if (dest_height > 0)
+        {
+            float v_up = 2.0f * Math.Sign(dest_height - transform.localRotation.y);
+            v_up = Math.Clamp(v_up, -8.0f, 8.0f);
+            rb.MovePosition(rb.position + Vector3.up * v_up * Time.deltaTime);
+        }
+        
         heading.y = 0;
-        Vector3 heading90 = Quaternion.Euler(0, -90f, 0) * heading;
+        Vector3 heading90 = Quaternion.Euler(0, 90f, 0) * heading;
         heading90 = heading90.normalized * radius;
         Vector3 destination = location + heading90;
         FlyTo(destination);
@@ -98,12 +131,21 @@ public class Enemy : MonoBehaviour
 
     void TakeDamage(int dam)
     {
-        if (health > dam) { health -= dam; }
+        if (health > dam)
+        {
+            health -= dam;
+        }
         else { health = 0; Dies(); }
+        healthbar.value = health / 100.0f;
     }
 
     void Dies()
     {
+        rb.useGravity = true;
+        isAlive = false;
+
+        clear_anim();
+        anim.Play(Animator.StringToHash("Die"));
 
     }
 

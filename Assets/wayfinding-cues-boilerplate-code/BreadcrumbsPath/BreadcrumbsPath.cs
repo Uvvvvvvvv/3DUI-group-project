@@ -9,6 +9,7 @@ public class BreadcrumbsPath : MonoBehaviour
     [SerializeField] private Vector3 inactivePosition = new(0, -50, 0);
     [SerializeField] private float markerSpacing = 4f;
     [SerializeField] private int skipNearPlayer = 2;
+    [SerializeField] private float markerYOffset = 1f; // ← added for vertical offset control
 
     [Header("Waypoints in quest order")]
     [Tooltip("Drag the Merchant first, then the Elder, then the next target …")]
@@ -18,13 +19,13 @@ public class BreadcrumbsPath : MonoBehaviour
     [SerializeField] private Transform player;
 
     /* ---------- private ---------- */
-    NavMeshPath _path;          // reused every frame
-    int _currentIndex = -1;     // −1 = inactive
+    NavMeshPath _path;
+    int _currentIndex = -1;
 
     /* ---------- life-cycle ---------- */
     void Awake() => _path = new NavMeshPath();
 
-    void Start() => SetTargetByIndex(0);     // start with the Merchant
+    void Start() => SetTargetByIndex(0);
 
     void Update()
     {
@@ -33,23 +34,16 @@ public class BreadcrumbsPath : MonoBehaviour
         Transform target = waypoints[_currentIndex];
         if (!player || !target) return;
 
-        // snap player and target to NavMesh
+        // Sample positions from NavMesh (no height offset here)
         if (!NavMesh.SamplePosition(player.position, out var pHit, 2, NavMesh.AllAreas) ||
             !NavMesh.SamplePosition(target.position, out var tHit, 2, NavMesh.AllAreas))
             return;
-
-        Vector3 playerPos = pHit.position + Vector3.down * 1.5f;
-        Vector3 targetPos = tHit.position + Vector3.down * 1.5f;
 
         if (!NavMesh.CalculatePath(tHit.position, pHit.position, NavMesh.AllAreas, _path) ||
             _path.corners.Length < 2) return;
 
         List<Vector3> pts = SamplePath(_path.corners, markerSpacing);
-
-        for (int i = 0; i < pts.Count; i++)
-            pts[i] += Vector3.down * 2f;
-
-        UpdateMarkers(pts);                     // move or hide spheres
+        UpdateMarkers(pts); // ← height offset applied only here
     }
 
     /* ---------- public API ---------- */
@@ -97,7 +91,16 @@ public class BreadcrumbsPath : MonoBehaviour
         for (int i = 0; i < markers.Length; i++)
         {
             int idx = pts.Count - 1 - skipNearPlayer - i;
-            markers[i].transform.position = idx >= 0 ? pts[idx] : inactivePosition;
+            if (idx >= 0)
+            {
+                Vector3 pos = pts[idx];
+                pos.y += markerYOffset; // ← apply height offset here only
+                markers[i].transform.position = pos;
+            }
+            else
+            {
+                markers[i].transform.position = inactivePosition;
+            }
         }
     }
 

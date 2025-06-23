@@ -110,3 +110,4 @@ public class BreadcrumbsPath : MonoBehaviour
             m.transform.position = inactivePosition;
     }
 }
+    

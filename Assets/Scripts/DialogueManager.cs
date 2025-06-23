@@ -14,7 +14,7 @@ public class DialogueManager : MonoBehaviour
 
     void Update()
     {
-        if (waitingForInput && Time.timeSinceLevelLoad >= minDisplayTime && Input.GetKeyDown(KeyCode.E))
+        if (waitingForInput && Time.timeSinceLevelLoad >= minDisplayTime && XRDialogueInput.ConfirmPressed)
         {
             HideNow();
         }

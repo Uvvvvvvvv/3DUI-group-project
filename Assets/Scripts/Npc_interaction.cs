@@ -45,7 +45,7 @@ public class NpcInteraction : MonoBehaviour
         if (player == null) return;
 
         float distance = Vector3.Distance(transform.position, player.position);
-        if (distance <= interactionRange && Input.GetKeyDown(KeyCode.E))
+        if (distance <= interactionRange && XRDialogueInput.ConfirmPressed)
         {
             DialogueManager.Show(greeting, waitForKey: true, forceShowSeconds: 3f);
 

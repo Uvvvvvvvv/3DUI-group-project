@@ -1,93 +1,112 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Packages.Rider.Editor.UnitTesting;
-using UnityEditor;
-using UnityEditor.Build.Content;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class BreadcrumbsPath : MonoBehaviour
 {
-    [Header("Marker Configuration")]
+    [Header("Marker configuration")]
     [SerializeField] private GameObject[] markers;
-    [SerializeField] private Vector3 inactivePosition;
-    [SerializeField] private float markerDistance = 5.0f;
-    [SerializeField] private int skipAFewMarkers = 1;
-    [Header("Agent Configuration")]
+    [SerializeField] private Vector3 inactivePosition = new(0, -50, 0);
+    [SerializeField] private float markerSpacing = 4f;
+    [SerializeField] private int skipNearPlayer = 2;
+    [SerializeField] private float markerYOffset = 1f; // ← added for vertical offset control
+
+    [Header("Waypoints in quest order")]
+    [Tooltip("Drag the Merchant first, then the Elder, then the next target …")]
+    public List<Transform> waypoints = new();
+
+    [Header("References")]
     [SerializeField] private Transform player;
-    [SerializeField] private Transform target;
 
-    private NavMeshPath _currentPath;
-    private NavMeshAgent _navAgent;
+    /* ---------- private ---------- */
+    NavMeshPath _path;
+    int _currentIndex = -1;
 
-    // Start is called before the first frame update
-    private void Start()
+    /* ---------- life-cycle ---------- */
+    void Awake() => _path = new NavMeshPath();
+
+    void Start() => SetTargetByIndex(0);
+
+    void Update()
     {
-        _currentPath = new NavMeshPath();
+        if (_currentIndex < 0 || _currentIndex >= waypoints.Count) return;
+
+        Transform target = waypoints[_currentIndex];
+        if (!player || !target) return;
+
+        // Sample positions from NavMesh (no height offset here)
+        if (!NavMesh.SamplePosition(player.position, out var pHit, 2, NavMesh.AllAreas) ||
+            !NavMesh.SamplePosition(target.position, out var tHit, 2, NavMesh.AllAreas))
+            return;
+
+        if (!NavMesh.CalculatePath(tHit.position, pHit.position, NavMesh.AllAreas, _path) ||
+            _path.corners.Length < 2) return;
+
+        List<Vector3> pts = SamplePath(_path.corners, markerSpacing);
+        UpdateMarkers(pts); // ← height offset applied only here
     }
 
-    // Update is called once per frame
-    private void Update()
+    /* ---------- public API ---------- */
+    public void SetTargetByIndex(int index)
     {
-        // ...
-
-        NavMeshHit target_pos;
-        NavMeshHit player_pos;
-        NavMesh.SamplePosition(target.position, out target_pos, 2.0f, NavMesh.AllAreas);
-        NavMesh.SamplePosition(player.position, out player_pos, 2.0f, NavMesh.AllAreas);
-
-        NavMesh.CalculatePath(player_pos.position, target_pos.position, NavMesh.AllAreas, _currentPath);
-        for (int i = 0; i < _currentPath.corners.Length - 1; i++)
+        if (index < 0 || index >= waypoints.Count)
         {
-            Debug.DrawLine(_currentPath.corners[i], _currentPath.corners[i + 1], Color.red);
-        }
-
-        UpdateMarkers(_currentPath.corners);
-    }
-
-    private void UpdateMarkers(Vector3[] path)
-    {
-        if (path.Length < 2)
-        {
+            HideAllMarkers();
+            _currentIndex = -1;
             return;
         }
+        _currentIndex = index;
+    }
 
-        var potentialMarkerPositions = new List<Vector3>();
-        var rest = 0.0f;
-        var from = Vector3.zero;
-        var to = Vector3.zero;
-        float remaining = 0.0f;
+    /* ---------- helpers ---------- */
+    static List<Vector3> SamplePath(IReadOnlyList<Vector3> c, float spacing)
+    {
+        var pts = new List<Vector3>();
+        float carry = 0;
+        Vector3 from = c[0];
 
-        for (int i = 0; i < path.Length - 1; i++)
+        for (int i = 1; i < c.Count; i++)
         {
+            Vector3 to = c[i];
+            float seg = Vector3.Distance(from, to);
 
-            from = path[i];
-            to = path[i + 1];
-            float seg_len = (to - from).magnitude;
-            remaining = seg_len + rest;
-            while (remaining > markerDistance)
+            while (seg + carry >= spacing)
             {
-                remaining -= markerDistance;
-                potentialMarkerPositions.Add(from + (to - from).normalized * (seg_len - remaining));
-            }
-            rest = remaining;
-        }
+                float d = spacing - carry;
+                Vector3 p = Vector3.Lerp(from, to, d / seg);
+                pts.Add(p);
 
+                seg -= d;
+                carry = 0;
+                from = p;
+            }
+            carry += seg;
+            from = to;
+        }
+        return pts;
+    }
+
+    void UpdateMarkers(IReadOnlyList<Vector3> pts)
+    {
         for (int i = 0; i < markers.Length; i++)
         {
-            if (potentialMarkerPositions.Count > i + skipAFewMarkers)
+            int idx = pts.Count - 1 - skipNearPlayer - i;
+            if (idx >= 0)
             {
-                Vector3 position = potentialMarkerPositions[i + skipAFewMarkers];
-                position.y -= 1;
-                markers[i].transform.position = position;
+                Vector3 pos = pts[idx];
+                pos.y += markerYOffset; // ← apply height offset here only
+                markers[i].transform.position = pos;
             }
             else
             {
                 markers[i].transform.position = inactivePosition;
             }
         }
-        
+    }
 
+    void HideAllMarkers()
+    {
+        foreach (var m in markers)
+            m.transform.position = inactivePosition;
     }
 }

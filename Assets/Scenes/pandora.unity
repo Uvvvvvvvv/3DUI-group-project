@@ -10448,9 +10448,7 @@ PrefabInstance:
         After
         you slay the dragon, claim its egg as proof and bring it back to me.
 
-        Follow
-        the marked path through the north gate to the cave and may fortune guide
-        your steps.'
+'
       objectReference: {fileID: 0}
     - target: {fileID: 2532406995015641893, guid: a309cf4f194935d4ba6f3d0f7b1a4272, type: 3}
       propertyPath: musicIndex
@@ -10541,8 +10539,7 @@ PrefabInstance:
         Speak with our
         merchant on the market square, she will equip you for the journey.
 
-        Return
-        victorious and Drakenvale will honour your name.'
+'
       objectReference: {fileID: 0}
     - target: {fileID: 2843496196758660648, guid: 241ca1e040572f14595e7ed0b9e4c4db, type: 3}
       propertyPath: musicIndex

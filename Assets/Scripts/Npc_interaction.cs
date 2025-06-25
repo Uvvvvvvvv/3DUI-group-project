@@ -31,7 +31,13 @@ public class NpcInteraction : MonoBehaviour
 
     private void Start()
     {
-        DialogueManager.Show("Welcome hero to our game, right now not vr, but will be. The merchant is your first point of contact. press e to continue", waitForKey: true, forceShowSeconds: 3f);
+
+        DialogueManager.Show("Welcome hero to Chronicles of Drakenvale\n\n" +
+    "Our valley lives in fear of an ancient dragon that broods in the western woods\n\n" +
+    "• Move with the left joystick\n" +
+    "• Look around with the right joystick\n" +
+    "• Press X to talk to characters\n\n" +
+    "Seek the village elder at the centre of the town", waitForKey: true, forceShowSeconds: 3f);
         
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)

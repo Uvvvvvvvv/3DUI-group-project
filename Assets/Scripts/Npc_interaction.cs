@@ -7,13 +7,17 @@ using UnityEngine.Events;
 
 public class NpcInteraction : MonoBehaviour
 {
-    public string npcName = "Merchant";
+    public string npcName = "Elder";
     public int waypointIndex = 0;           // ★ new
+
+    [Header("Music")]
+    public int musicIndex = -1;            // ★ -1 = do not change music
+    public bool loopMusic = true;          // ★ should this track loop?
+
 
     [TextArea(3, 6)]
     public string greeting =
-       "«Hello traveller, take a look at my wares. "
-     + "By the way, the village elder is looking for someone like you.»";
+       "default greetigs hould not be seen ";
 
 
     public float interactionRange = 3f;
@@ -50,6 +54,8 @@ public class NpcInteraction : MonoBehaviour
             DialogueManager.Show(greeting, waitForKey: true, forceShowSeconds: 3f);
 
             OnTalk.Invoke(npcName, waypointIndex);       // ★ pass both
+            if (musicIndex >= 0)
+                MusicManager.Instance?.PlayTrack(musicIndex, loopMusic);
         }
     }
 

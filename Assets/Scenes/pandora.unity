@@ -3224,9 +3224,10 @@ GameObject:
   - component: {fileID: 675951631}
   - component: {fileID: 675951630}
   - component: {fileID: 675951629}
+  - component: {fileID: 675951632}
   m_Layer: 0
   m_Name: Capsule
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3322,6 +3323,21 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 675951627}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &675951632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 675951627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1527f8b6f9a189e42a0450afff573be2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHP: 100
+  hasSword: 0
+  hasRockSpell: 0
 --- !u!1001 &680872597
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10438,15 +10454,15 @@ PrefabInstance:
       propertyPath: greeting
       value: 'Welcome courageous one
 
-        
 
-        The elder has already spoken
-        of your mission.
+
+        The elder has already spoken of your
+        mission.
 
         Take these weapons, they will aid you.
 
-        After
-        you slay the dragon, claim its egg as proof and bring it back to me.
+        After you
+        slay the dragon, claim its egg as proof and bring it back to me.
 
 '
       objectReference: {fileID: 0}
@@ -10531,13 +10547,13 @@ PrefabInstance:
       propertyPath: greeting
       value: 'Greetings adventurer
 
-        
 
-        A dragon in the western forest
-        scorches our valley, we beg you to face the beast.
 
-        Speak with our
-        merchant on the market square, she will equip you for the journey.
+        A dragon in the western forest scorches
+        our valley, we beg you to face the beast.
+
+        Speak with our merchant
+        on the market square, she will equip you for the journey.
 
 '
       objectReference: {fileID: 0}

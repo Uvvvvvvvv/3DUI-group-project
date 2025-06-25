@@ -9773,11 +9773,11 @@ PrefabInstance:
     - target: {fileID: 4616773982678055728, guid: dc3aa33d000636a448a03b990166ca90, type: 3}
       propertyPath: 'waypoints.Array.data[0]'
       value: 
-      objectReference: {fileID: 1683091317}
+      objectReference: {fileID: 391891242}
     - target: {fileID: 4616773982678055728, guid: dc3aa33d000636a448a03b990166ca90, type: 3}
       propertyPath: 'waypoints.Array.data[1]'
       value: 
-      objectReference: {fileID: 391891242}
+      objectReference: {fileID: 1683091317}
     - target: {fileID: 4616773982678055729, guid: dc3aa33d000636a448a03b990166ca90, type: 3}
       propertyPath: m_LocalPosition.x
       value: -168.342
@@ -10005,6 +10005,24 @@ PrefabInstance:
       value: Merchant
       objectReference: {fileID: 0}
     - target: {fileID: 2532406995015641893, guid: a309cf4f194935d4ba6f3d0f7b1a4272, type: 3}
+      propertyPath: greeting
+      value: 'Welcome courageous one
+
+        
+
+        The elder has already spoken
+        of your mission.
+
+        Take these weapons, they will aid you.
+
+        After
+        you slay the dragon, claim its egg as proof and bring it back to me.
+
+        Follow
+        the marked path through the north gate to the cave and may fortune guide
+        your steps.'
+      objectReference: {fileID: 0}
+    - target: {fileID: 2532406995015641893, guid: a309cf4f194935d4ba6f3d0f7b1a4272, type: 3}
       propertyPath: musicIndex
       value: 2
       objectReference: {fileID: 0}
@@ -10026,15 +10044,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5982051432955697558, guid: a309cf4f194935d4ba6f3d0f7b1a4272, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -170.83755
+      value: -151.78
       objectReference: {fileID: 0}
     - target: {fileID: 5982051432955697558, guid: a309cf4f194935d4ba6f3d0f7b1a4272, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 10.08
+      value: 8.956
       objectReference: {fileID: 0}
     - target: {fileID: 5982051432955697558, guid: a309cf4f194935d4ba6f3d0f7b1a4272, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 154.58435
+      value: 161.16
       objectReference: {fileID: 0}
     - target: {fileID: 5982051432955697558, guid: a309cf4f194935d4ba6f3d0f7b1a4272, type: 3}
       propertyPath: m_LocalRotation.w
@@ -10082,6 +10100,21 @@ PrefabInstance:
       value: Elder
       objectReference: {fileID: 0}
     - target: {fileID: 2843496196758660648, guid: 241ca1e040572f14595e7ed0b9e4c4db, type: 3}
+      propertyPath: greeting
+      value: 'Greetings adventurer
+
+        
+
+        A dragon in the western forest
+        scorches our valley, we beg you to face the beast.
+
+        Speak with our
+        merchant on the market square, she will equip you for the journey.
+
+        Return
+        victorious and Drakenvale will honour your name.'
+      objectReference: {fileID: 0}
+    - target: {fileID: 2843496196758660648, guid: 241ca1e040572f14595e7ed0b9e4c4db, type: 3}
       propertyPath: musicIndex
       value: 1
       objectReference: {fileID: 0}
@@ -10103,15 +10136,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5979982717414427938, guid: 241ca1e040572f14595e7ed0b9e4c4db, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -170.83755
+      value: -165.34
       objectReference: {fileID: 0}
     - target: {fileID: 5979982717414427938, guid: 241ca1e040572f14595e7ed0b9e4c4db, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 15.11
+      value: 13.03
       objectReference: {fileID: 0}
     - target: {fileID: 5979982717414427938, guid: 241ca1e040572f14595e7ed0b9e4c4db, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 211.8
+      value: 194.72
       objectReference: {fileID: 0}
     - target: {fileID: 5979982717414427938, guid: 241ca1e040572f14595e7ed0b9e4c4db, type: 3}
       propertyPath: m_LocalRotation.w

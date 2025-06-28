@@ -467,41 +467,8 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "first",
-                    "id": "afdcfbff-e241-4fdd-a6d1-23b0bf273360",
-                    "path": "<XRController>{LeftHand}/pointerRotation",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Rotation",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "second",
-                    "id": "ed03d944-4c09-4c38-8b68-5c844e18ca7c",
-                    "path": "<XRController>{LeftHand}/deviceRotation",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Rotation",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "third",
-                    "id": "c98fc8c8-7fc6-4909-89b6-c5b7568e7275",
-                    "path": "<XRHandDevice>{LeftHand}/deviceRotation",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Rotation",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
                     "name": "",
-                    "id": "474fd6f1-3efa-4717-abf6-294da1e83fe1",
+                    "id": "66ee7eb1-c7bc-481b-b84a-8a7d88b40c10",
                     "path": "<XRController>{LeftHand}/deviceRotation",
                     "interactions": "",
                     "processors": "",
@@ -556,7 +523,7 @@
                 },
                 {
                     "name": "",
-                    "id": "08147ae7-a887-4c18-a75c-dd42883656f2",
+                    "id": "e4e9e82e-0df9-4215-ad37-c46f476ddd1e",
                     "path": "<XRController>{LeftHand}/devicePosition",
                     "interactions": "",
                     "processors": "",
@@ -1324,15 +1291,6 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "ConfirmDialogue",
-                    "type": "Button",
-                    "id": "73d09843-d4f3-4580-a5e5-3fab7351273a",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
                     "name": "Teleport Mode Cancel",
                     "type": "Button",
                     "id": "89ce8348-6001-41a3-85b9-f8f2e2dcad7c",
@@ -1376,6 +1334,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ConfirmDialogue",
+                    "type": "Button",
+                    "id": "837d7b08-007c-4d85-8da3-759967629e05",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -1387,17 +1354,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Teleport Mode",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "c65fbeb6-0ad9-4a36-a3d4-2ca7c35224a2",
-                    "path": "<XRController>{LeftHand}/{PrimaryButton}",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "ConfirmDialogue",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -1453,6 +1409,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Snap Turn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "093fc85d-77c4-4974-a302-a9af979180b2",
+                    "path": "<XRController>{LeftHand}/{PrimaryButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ConfirmDialogue",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -1602,41 +1569,8 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "first",
-                    "id": "3722d501-eb80-4f61-9361-08a5ea7a1394",
-                    "path": "<XRController>{RightHand}/pointerRotation",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Rotation",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "second",
-                    "id": "2e6ad191-d5aa-4919-aac6-295c83387a72",
-                    "path": "<XRController>{RightHand}/deviceRotation",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Rotation",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "third",
-                    "id": "b9ecb60d-341e-47cf-b50a-41d5815af8b0",
-                    "path": "<XRHandDevice>{RightHand}/deviceRotation",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Rotation",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
                     "name": "",
-                    "id": "2a821d9c-1eea-4373-9671-6f4132906f56",
+                    "id": "23267594-4b62-45cb-b3e3-6e3f699e6371",
                     "path": "<XRController>{RightHand}/deviceRotation",
                     "interactions": "",
                     "processors": "",
@@ -1691,7 +1625,7 @@
                 },
                 {
                     "name": "",
-                    "id": "70fbb084-9fb1-4aa4-ace3-85caf6f82517",
+                    "id": "14254276-2e5f-4162-92eb-53704cc07f2a",
                     "path": "<XRController>{RightHand}/devicePosition",
                     "interactions": "",
                     "processors": "",
@@ -2203,6 +2137,17 @@
                 },
                 {
                     "name": "",
+                    "id": "32ee1af7-4682-4d74-8acf-35dcbbe4fb91",
+                    "path": "<XRInputV1::Oculus::OculusTouchControllerLeft>{RightHand}/grippressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "dd433817-216c-46b9-8dd3-f3a4ea1767b9",
                     "path": "<XRController>{RightHand}/{Grip}",
                     "interactions": "",
@@ -2462,7 +2407,7 @@
                     "name": "Teleport Mode Cancel",
                     "type": "Button",
                     "id": "d587b60c-39a0-4365-8075-477ce484ba0f",
-                    "expectedControlType": "",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -2498,7 +2443,7 @@
                     "name": "Grab Move",
                     "type": "Button",
                     "id": "cfb29d37-3db0-4e5d-a73b-7d48a19e279e",
-                    "expectedControlType": "",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false

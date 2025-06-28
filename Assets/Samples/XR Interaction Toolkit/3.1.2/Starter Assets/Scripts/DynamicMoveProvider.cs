@@ -1,7 +1,6 @@
 using Unity.XR.CoreUtils;
 using UnityEngine.Assertions;
 using UnityEngine.XR.Interaction.Toolkit.Locomotion.Movement;
-using UnityEngine.InputSystem;
 
 namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 {
@@ -94,14 +93,6 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             get => m_RightHandMovementDirection;
             set => m_RightHandMovementDirection = value;
         }
-        [Space, Header("Sprint Settings")]
-        [SerializeField]
-        [Tooltip("Speed multiplier when sprinting.")]
-        private float sprintMultiplier = 2f;
-
-        [SerializeField]
-        [Tooltip("Input Action used to trigger sprinting (e.g., right trigger or thumbstick click).")]
-        private InputActionProperty sprintAction;
 
         Transform m_CombinedTransform;
         Pose m_LeftMovementPose = Pose.identity;
@@ -193,12 +184,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             var combinedRotation = Quaternion.Slerp(m_RightMovementPose.rotation, m_LeftMovementPose.rotation, leftHandBlend);
             m_CombinedTransform.SetPositionAndRotation(combinedPosition, combinedRotation);
 
-            var move = base.ComputeDesiredMove(input);
-            bool isSprinting = sprintAction.action != null && sprintAction.action.ReadValue<float>() > 0.1f;
-            if (isSprinting)
-                move *= sprintMultiplier;
-
-            return move;
+            return base.ComputeDesiredMove(input);
         }
     }
 }

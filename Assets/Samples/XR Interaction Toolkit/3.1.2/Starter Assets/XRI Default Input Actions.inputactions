@@ -500,6 +500,17 @@
                     "isPartOfComposite": true
                 },
                 {
+                    "name": "",
+                    "id": "474fd6f1-3efa-4717-abf6-294da1e83fe1",
+                    "path": "<XRController>{LeftHand}/deviceRotation",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
                     "name": "Vector 3 Fallback",
                     "id": "14aeff85-d719-43ff-a124-b1cd7ca8686d",
                     "path": "Vector3Fallback",
@@ -542,6 +553,17 @@
                     "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "08147ae7-a887-4c18-a75c-dd42883656f2",
+                    "path": "<XRController>{LeftHand}/devicePosition",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Position",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 },
                 {
                     "name": "",
@@ -1613,6 +1635,17 @@
                     "isPartOfComposite": true
                 },
                 {
+                    "name": "",
+                    "id": "2a821d9c-1eea-4373-9671-6f4132906f56",
+                    "path": "<XRController>{RightHand}/deviceRotation",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
                     "name": "Vector 3 Fallback",
                     "id": "74e968f1-ad08-4a82-a68d-764517faecef",
                     "path": "Vector3Fallback",
@@ -1655,6 +1688,17 @@
                     "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "70fbb084-9fb1-4aa4-ace3-85caf6f82517",
+                    "path": "<XRController>{RightHand}/devicePosition",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Position",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 },
                 {
                     "name": "",

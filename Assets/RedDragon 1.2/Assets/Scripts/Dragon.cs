@@ -432,7 +432,7 @@ public class Dragon : MonoBehaviour, LivingBeing
     }
     bool CheckPlayerClose()
     {
-        GameObject player = GameObject.Find("Player");
+        GameObject player = GameObject.FindWithTag("Player");
         Vector3 delta = rb.position - player.transform.position;
         delta.y = 0;
         return delta.magnitude < player_detection_range;

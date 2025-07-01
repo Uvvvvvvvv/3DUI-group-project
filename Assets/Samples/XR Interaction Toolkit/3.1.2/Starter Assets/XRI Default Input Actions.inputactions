@@ -1558,6 +1558,17 @@
             ],
             "bindings": [
                 {
+                    "name": "",
+                    "id": "91fb9cee-9eee-4b48-bb25-71b4aebe637a",
+                    "path": "<XRController>{RightHand}/deviceRotation",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
                     "name": "Quaternion Fallback",
                     "id": "84e51e1c-1b95-4f3e-a61f-29da6c1f0816",
                     "path": "QuaternionFallback",
@@ -1570,12 +1581,12 @@
                 },
                 {
                     "name": "",
-                    "id": "91fb9cee-9eee-4b48-bb25-71b4aebe637a",
-                    "path": "<TrackedDevice>/deviceRotation",
+                    "id": "df383d89-654f-4d31-a36f-c25090b02ead",
+                    "path": "<XRController>{RightHand}/devicePosition",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Rotation",
+                    "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -1591,9 +1602,9 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "first",
+                    "name": "First",
                     "id": "9717e367-64a4-440a-9974-1e641d753eb2",
-                    "path": "<XRController>{RightHand}/pointerPosition",
+                    "path": "<XRController>{RightHand}/devicePosition",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -1622,17 +1633,6 @@
                     "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": true
-                },
-                {
-                    "name": "",
-                    "id": "df383d89-654f-4d31-a36f-c25090b02ead",
-                    "path": "<TrackedDevice>/devicePosition",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Position",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 },
                 {
                     "name": "",

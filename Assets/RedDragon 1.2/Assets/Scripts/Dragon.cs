@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public abstract class AnimationController {
@@ -29,8 +30,10 @@ public class DragonAnimationController : AnimationController {
         {
             clear_animation();
             animator.SetBool(Animator.StringToHash(a), true);
-            //anim.Play(Animator.StringToHash(a));
+            return;
+            //animator.Play(Animator.StringToHash(a));
         }
+       
     }
     public override void clear_animation()
     {
@@ -58,15 +61,23 @@ public class AirPursuitAttack : Routine
     private float range = 17f;
     private bool in_shooting_range = false;
 
+    private float time_limit = 15f;
+
     public AirPursuitAttack(Dragon dragon) : base(dragon) { }
     public override void act()
     {
         fire_timer -= Time.deltaTime;
+        time_limit -= Time.deltaTime;
+        if (time_limit < 0)
+        {
+            isActive = false;
+            return;
+        }
         Vector3 goal = dragon.transform.InverseTransformPoint(dragon.target.transform.position);
         goal.y = 0;
         if (!dragon.AscendTo(alt)) { return; }
         if (!in_shooting_range) { in_shooting_range = dragon.FlyTo(dragon.target.transform.position, 10f);  return; }
-        if (!dragon.target_locked){ dragon.RotateToFace(dragon.target.transform.position);  return;}
+        if (!dragon.RotateToFace(dragon.target.transform.position)){  return;}
         dragon.ac.set_animation("Hover");
         dragon.target_locked = false;
         in_shooting_range = goal.magnitude < range * 5;
@@ -86,9 +97,8 @@ public class FlyToHome : Routine
     public FlyToHome(Dragon dragon) : base(dragon){}
     public override void act()
     {
-        Debug.Log(ascend_complete); 
-        if (!ascend_complete) { ascend_complete = dragon.AscendTo(13f); return; }
-        if (!arrived) { arrived = dragon.FlyTo(dragon.nest.transform.position); Debug.Log("Flying Home"); return; }
+        if (!ascend_complete) { ascend_complete = dragon.AscendTo(17f); return; }
+        if (!arrived) { arrived = dragon.FlyTo(dragon.nest.transform.position, 1); Debug.Log("Flying Home"); return; }
         if (!dragon.Land()) { return; }
         isActive = false;
         
@@ -103,14 +113,53 @@ public class Idle : Routine
         isActive = false;
     }
 }
+public class GroundPursuitAttack : Routine
+{
+    public float fire_timer = 4f;
+    public float alt = 13;
+    private float range = 17f;
+    private bool in_shooting_range = false;
+    private bool at_home = false;
+
+    private float time_limit = 15f;
+    public GroundPursuitAttack(Dragon d) : base(d){}
+    public override void act()
+    {
+        fire_timer -= Time.deltaTime;
+        time_limit -= Time.deltaTime;
+        if (time_limit < 0)
+        {
+            isActive = false;
+            return;
+        }
+        Vector3 goal = dragon.transform.InverseTransformPoint(dragon.target.transform.position);
+        goal.y = 0;
+
+        in_shooting_range = goal.magnitude < range * 5;
+        if (!in_shooting_range) { return; }
+
+        dragon.rb.useGravity = true;
+        if (!dragon.GroundRotateToFace(dragon.target.transform.position)) { return; }
+        dragon.ac.set_animation("Drakaris");
+        dragon.target_locked = false;
+        
+        float angle_error = Mathf.Atan2(goal.x, goal.z);
+        if (Math.Abs(angle_error) < 5 && goal.magnitude < range * 4 && fire_timer < 0)
+        {
+            dragon.firebreather.transform.LookAt(dragon.target.transform.position);
+            dragon.ShootFireball();
+            fire_timer = 2f;
+        }
+    }
+}
 public class Dragon : MonoBehaviour, LivingBeing
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
     bool isAlive = true;
-    Rigidbody rb;
+    public Rigidbody rb;
     private Animator anim;
-    private float health = 100;
+    private float health = 10;
     public float health_max = 100;
     private UnityEngine.UI.Slider healthbar;
     public GameObject firebreather;
@@ -123,7 +172,7 @@ public class Dragon : MonoBehaviour, LivingBeing
     public GameObject target;
     public float protect_perimeter = 40;
     public bool target_locked = false;
-    private float rotspeed = 50;
+    private float rotspeed = 70;
     private bool rth = false;
 
     void Start()
@@ -136,24 +185,39 @@ public class Dragon : MonoBehaviour, LivingBeing
         healthbar.value = health / 100.0f;
         firebreather = GameObject.FindWithTag("Firebreather");
         head = GameObject.FindWithTag("DragonHead");
-        Debug.Log(head);
         routine = new Idle(this);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!CheckPerimeter() && !rth)
+       if (!isAlive) {return;}
+       if (routine.isActive) { routine.act(); return; }
+       
+       if (!CheckPerimeter()) {  
+        routine = new FlyToHome(this); 
+        return;
+       }
+
+        if (!IsAtHome() && health < 30)
         {
             routine = new FlyToHome(this);
-            rth = true;
+            return;
         }
-        else if (CheckPlayerClose() && !routine.isActive)
-        {
-            routine = new AirPursuitAttack(this);
 
-        }
-        routine.act();
+       if (CheckPlayerClose()) { 
+            if (health > 30)
+            {
+                routine = new AirPursuitAttack(this);
+                return;
+            }
+            else
+            {
+                routine = new GroundPursuitAttack(this);
+                return;
+             
+            }
+       }
     }
 
     public void ShootFireball()
@@ -163,11 +227,6 @@ public class Dragon : MonoBehaviour, LivingBeing
         fb.SetDirection(firebreather.transform.TransformDirection(Vector3.forward));
 
     }
-    void LookAt(Vector3 location)
-    {
-
-    }
-
     public void TakeDamage(float dam)
     {
         if (health > dam)
@@ -187,7 +246,7 @@ public class Dragon : MonoBehaviour, LivingBeing
 
             ac.clear_animation();
             anim.Play(Animator.StringToHash("Die"));
-            Destroy(gameObject);
+            rb.freezeRotation = false;
         }
     }
 
@@ -210,6 +269,12 @@ public class Dragon : MonoBehaviour, LivingBeing
         return delta.magnitude < protect_perimeter;
     }
 
+    bool IsAtHome()
+    {
+        Vector3 delta = rb.position - nest.transform.position;
+        delta.y = 0;
+        return delta.magnitude < 5;
+    }
     public bool FlyTo(Vector3 location, float within=5)
     {
         /*
@@ -251,7 +316,12 @@ public class Dragon : MonoBehaviour, LivingBeing
         if (Math.Abs(angle_error) > 0.01 && !target_locked)
         {
             ac.set_animation("Hover");
-            rb.transform.Rotate(Vector3.up, rotspeed * Math.Sign(angle_error) * Time.deltaTime);
+            Vector3 orientation = rb.transform.rotation.eulerAngles;
+            orientation.x = 0;
+            orientation.z = 0;
+            orientation.y += rotspeed * Math.Sign(angle_error) * Time.deltaTime;
+            //rb.transform.Rotate(Vector3.up, rotspeed * Math.Sign(angle_error) * Time.deltaTime);
+            rb.transform.rotation = Quaternion.Euler(orientation);
             return false;
         }
         target_locked = Math.Abs(angle_error) > Math.PI / 2 - 0.05;
@@ -288,26 +358,25 @@ public class Dragon : MonoBehaviour, LivingBeing
         target_locked = Math.Abs(angle_error) > Math.PI / 2 - 0.05;
         return true;
     }
-    public bool WalkTo(Vector3 location)
+    public bool WalkTo(Vector3 location, float range=5f)
     {
+        rb.useGravity = true;
         Vector3 delta = rb.transform.position - location;
         delta.y = 0;
-        if (delta.magnitude < 5)
+        if (delta.magnitude < range)
         {
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
-            ac.set_animation("IdleSimple");
+            ac.set_animation("BattleStance");
             return true;
         }
         if (!GroundRotateToFace(location))
         {
             return false;
         }
-
-        // Fly to target with PurePursuit
         ac.set_animation("Walk");
         Vector3 v = new Vector3(); v.x = 0; v.y = 0;
-        v.z = 35;
+        v.z = 15;
         Vector3 v_world = rb.transform.TransformVector(v);
         v_world.y = 0;
 
@@ -317,6 +386,7 @@ public class Dragon : MonoBehaviour, LivingBeing
 
     public bool AscendTo(float alt)
     {
+        rb.useGravity = false;
         float alt_error = rb.transform.position.y - alt;
         if (Math.Abs(alt_error) < 1e-2)
         {
@@ -325,8 +395,7 @@ public class Dragon : MonoBehaviour, LivingBeing
             return true;
         }
         ac.set_animation("Hover");
-        rb.useGravity = false;
-        float set_vel = Math.Clamp(alt_error * -4, -4, 4);
+        float set_vel = Math.Clamp(alt_error * -5, -5, 5);
         rb.linearVelocity = Vector3.up * set_vel;
         return false;
     }

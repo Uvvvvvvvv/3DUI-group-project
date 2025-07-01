@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Firebreather
+  - DragonHead
   layers:
   - Default
   - TransparentFX

@@ -47,10 +47,12 @@ public class SwordSwingDetector : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (!isSwinging) return;
-
-        if (other.CompareTag("Enemy"))
+        Debug.Log("Collision Sword");
+        LivingBeing enemy = other.gameObject.GetComponentInParent<LivingBeing>();
+        if (enemy != null)
         {
             Debug.Log("🎯 Enemy Hit!");
+            enemy.TakeDamage(8);
 
             // 播放命中音效
             if (hitSound != null)

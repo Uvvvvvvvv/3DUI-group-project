@@ -152,7 +152,7 @@ public class GroundPursuitAttack : Routine
         }
     }
 }
-public class Dragon : MonoBehaviour, LivingBeing
+public class Dragon : MonoBehaviour,LivingBeing
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
@@ -229,6 +229,7 @@ public class Dragon : MonoBehaviour, LivingBeing
     }
     public void TakeDamage(float dam)
     {
+       
         if (health > dam)
         {
             health -= dam;

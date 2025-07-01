@@ -23,7 +23,7 @@ public class Fireball : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        LivingBeing b = collision.gameObject.GetComponent<LivingBeing>();
+        FlamableBeing b = collision.gameObject.GetComponent<FlamableBeing>();
         if (b != null)
         {
             b.TakeDamage(10);

@@ -3,7 +3,7 @@ using UnityEngine;
 public class Fireball : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public float speed = 20f;
+    public float speed = 40f;
     private Vector3 direction;
 
     public void SetDirection(Vector3 dir)

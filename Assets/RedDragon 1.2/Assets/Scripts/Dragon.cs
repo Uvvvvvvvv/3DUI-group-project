@@ -1,42 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Xml;
-using NUnit.Framework.Internal;
 using Unity.VisualScripting;
-using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.UIElements;
-
-public class ActionIDLock
-{
-    string lockID = "";
-    public bool accquire(string withID)
-    {
-        if (lockID == "" || lockID == withID)
-        {
-            lockID = withID;
-            return true;
-        }
-        return false;
-    }
-
-    public void release(string withID)
-    {
-        if (withID == lockID)
-        {
-            lockID = "";
-        }
-    }
-
-    public bool force_accquire(string withID)
-    {
-        lockID = withID; return true;
-    }
-    public bool force_release()
-    {
-        lockID = ""; return true;
-    }
-}
 
 public abstract class AnimationController {
     public abstract void set_animation(string a);
@@ -64,8 +30,10 @@ public class DragonAnimationController : AnimationController {
         {
             clear_animation();
             animator.SetBool(Animator.StringToHash(a), true);
-            //anim.Play(Animator.StringToHash(a));
+            return;
+            //animator.Play(Animator.StringToHash(a));
         }
+       
     }
     public override void clear_animation()
     {
@@ -75,269 +43,137 @@ public class DragonAnimationController : AnimationController {
         }
     }
 }
-public abstract class Routine {
-    public Rigidbody rb;
-    public AnimationController ac;
-    public Routine(Rigidbody rgbd, AnimationController anctl)
+public abstract class Routine
+{
+    public Dragon dragon;
+    public Routine(Dragon d)
     {
-        rb = rgbd;
-        ac = anctl;
+        dragon = d;
     }
     public bool isActive = true;
-    public abstract bool act();
+    public abstract void act();
 }
 
-class Landing : Routine
+public class AirPursuitAttack : Routine
 {
-    public Landing(Rigidbody rb, DragonAnimationController ac)
-    : base(rb, ac)
-    {
+    public float fire_timer = 4f;
+    public float alt = 13;
+    private float range = 17f;
+    private bool in_shooting_range = false;
 
-    }
-    public override bool act()
+    private float time_limit = 15f;
+
+    public AirPursuitAttack(Dragon dragon) : base(dragon) { }
+    public override void act()
     {
-        if (CheckGround())
+        fire_timer -= Time.deltaTime;
+        time_limit -= Time.deltaTime;
+        if (time_limit < 0)
         {
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-            ac.set_animation("IdleSimple");
             isActive = false;
-            return true;
-        }
-        ac.set_animation("Hover");
-        rb.linearVelocity = Vector3.up * -6;
-        rb.useGravity = true;
-        return false;
-    }
-    
-    bool CheckGround()
-    {
-        bool grounded = Physics.Raycast(rb.transform.position, UnityEngine.Vector3.down,
-        (float)(rb.transform.localScale.y + 0.05f));
-        return grounded;
-    }
-}
-class Ascend : Routine
-{
-    float target_alt;
-    public Ascend(Rigidbody rb, DragonAnimationController ac, float set_alt)
-    : base(rb, ac)
-    {
-        target_alt = set_alt;
-    }
-    public override bool act()
-    {
-        float alt_error = rb.transform.position.y - target_alt;
-
-        if (Math.Abs(alt_error) < 1e-2)
-        {
-            rb.linearVelocity = Vector3.zero;
-            isActive = false;
-            return true;
-        }
-        ac.set_animation("Hover");
-        rb.useGravity = false;
-        float set_vel = Math.Clamp(alt_error * -6, -6, 6);
-        rb.linearVelocity = Vector3.up * set_vel;
-        return false;
-    }
-}
-
-class FlyTothenOrbit : Routine
-{
-    public Vector3 target_pos;
-    public float radius = 10;
-    private bool target_locked = false;
-    private float rotspeed = 40;
-    public bool keep_orbit = false;
-    public FlyTothenOrbit(Rigidbody rb, DragonAnimationController ac, Vector3 target)
-    : base(rb, ac)
-    {
-        target_pos = target;
-    }
-    public override bool act()
-    {
-        Vector3 heading = rb.transform.position - target_pos;
-
-        Vector3 goal = rb.transform.InverseTransformPoint(target_pos);
-        goal.y = 0;
-
-        heading.y = 0;
-        Vector3 heading60 = Quaternion.Euler(0, 60f, 0) * heading;
-        heading60 = heading60.normalized * radius;
-        Vector3 destination = target_pos + heading60;
-        FlyTo(destination);
-        if (goal.magnitude <= radius * 5.05) { if (!keep_orbit) { isActive = false; }  return true; }
-        return false;
-    }
-
-    public void FlyTo(Vector3 location)
-    {
-        /*
-            Fly to the set point with the PurePursuit algo. Will glitch once arrive 
-            recommended instead: FlyToandOrbit
-        */
-        Vector3 goal = rb.transform.InverseTransformPoint(location);
-        goal.y = 0;
-
-        float angle_error = Mathf.Atan2(goal.x, goal.z);
-
-        if (Math.Abs(angle_error) > Math.PI / 2 * 0.7 && !target_locked)
-        {
-            // Rotate to face the target if target is behind
-            ac.set_animation("Hover");
-            rb.transform.Rotate(Vector3.up, rotspeed * Math.Sign(angle_error) * Time.deltaTime);
             return;
         }
-
-        // Fly to target with PurePursuit
-        ac.set_animation("FlyingFWD");
-        target_locked = Math.Abs(angle_error) < (Math.PI / 2);
-
-        float arc_radius = goal.magnitude / (2 * (float)Math.Sin(angle_error));
-        Vector3 v = new Vector3(); v.x = 0; v.y = 0;
-        v.z = 35;
-        Vector3 v_world = rb.transform.TransformVector(v);
-        v_world.y = 0;
-
-        rb.linearVelocity = v_world;
-        rb.angularVelocity = 20 / arc_radius * Vector3.up;
-        //transform.Rotate(Vector3.up, 20 / arc_radius * 180 / (float)Math.PI * Time.deltaTime);
-    }
-}
-
-class FlyToExactSpot : Routine
-{
-    Vector3 target;
-    private bool target_locked = false;
-    private float rotspeed = 40;
-    public FlyToExactSpot(Rigidbody rb, DragonAnimationController ac, Vector3 target_pos) : base(rb, ac)
-    {
-        target = target_pos;
-    }
-
-    public override bool act()
-    {
-        FlyTo(target);
-        Vector3 delta = rb.transform.position - target;
-        delta.y = 0;
-        if (delta.magnitude < 1)
-        {
-            rb.angularVelocity = Vector3.zero;
-            rb.linearVelocity = Vector3.zero;
-            isActive = false;
-            return true;
-        }
-        return false;
-    }
-
-    public void FlyTo(Vector3 location)
-    {
-        /*
-            Fly to the set point with the PurePursuit algo. Will glitch once arrive 
-            recommended instead: FlyToandOrbit
-        */
-        Vector3 goal = rb.transform.InverseTransformPoint(location);
+        Vector3 goal = dragon.transform.InverseTransformPoint(dragon.target.transform.position);
         goal.y = 0;
-
+        if (!dragon.AscendTo(alt)) { return; }
+        if (!in_shooting_range) { in_shooting_range = dragon.FlyTo(dragon.target.transform.position, 10f);  return; }
+        if (!dragon.RotateToFace(dragon.target.transform.position)){  return;}
+        dragon.ac.set_animation("Hover");
+        dragon.target_locked = false;
+        in_shooting_range = goal.magnitude < range * 5;
         float angle_error = Mathf.Atan2(goal.x, goal.z);
-
-        if (Math.Abs(angle_error) > Math.PI / 2 * 0.7 && !target_locked)
+        if (Math.Abs(angle_error) < 5 && goal.magnitude < range*5 && fire_timer < 0)
         {
-            // Rotate to face the target if target is behind
-            ac.set_animation("Hover");
-            rb.transform.Rotate(Vector3.up, rotspeed * Math.Sign(angle_error) * Time.deltaTime);
-            return;
+            dragon.firebreather.transform.LookAt(dragon.target.transform.position);
+            dragon.ShootFireball();
+            fire_timer = 4f;
         }
-
-        // Fly to target with PurePursuit
-        ac.set_animation("FlyingFWD");
-        target_locked = Math.Abs(angle_error) < (Math.PI / 2);
-
-        float arc_radius = goal.magnitude / (2 * (float)Math.Sin(angle_error));
-        Vector3 v = new Vector3(); v.x = 0; v.y = 0;
-        v.z = 35;
-        Vector3 v_world = rb.transform.TransformVector(v);
-        v_world.y = 0;
-
-        rb.linearVelocity = v_world;
-        rb.angularVelocity = 20 / arc_radius * Vector3.up;
-        //transform.Rotate(Vector3.up, 20 / arc_radius * 180 / (float)Math.PI * Time.deltaTime);
     }
 }
-class DefaultRoutine : Routine
+public class FlyToHome : Routine
 {
-    public DefaultRoutine(Rigidbody rgbd, AnimationController anctl) : base(rgbd, anctl) { }
-    public override bool act()
+    public bool arrived = false;
+    public bool ascend_complete = false;
+    public FlyToHome(Dragon dragon) : base(dragon){}
+    public override void act()
     {
-        ac.set_animation("IdleSimple");
+        if (!ascend_complete) { ascend_complete = dragon.AscendTo(17f); return; }
+        if (!arrived) { arrived = dragon.FlyTo(dragon.nest.transform.position, 1); Debug.Log("Flying Home"); return; }
+        if (!dragon.Land()) { return; }
         isActive = false;
-        return true;
+        
     }
 }
-class ChaseAttack : FlyTothenOrbit
+public class Idle : Routine
 {
-    GameObject target;
-    public ChaseAttack(Rigidbody rgbd, DragonAnimationController anctl, GameObject go) : base(rgbd, anctl, go.transform.position)
+    public Idle(Dragon dragon) : base(dragon){}
+    public override void act()
     {
-        target = go;
-        keep_orbit = true;
-    }
-    public override bool act()
-    {
-        target_pos = target.transform.position;
-        return base.act();
+        dragon.ac.set_animation("IdleSimple");
+        isActive = false;
     }
 }
-class Sequential : Routine
+public class GroundPursuitAttack : Routine
 {
-    int current_routine = 0;
-    public List<Routine> routines;
-    public Sequential(Rigidbody rb, DragonAnimationController ac,
-    List<Routine> sequence)
-    : base(rb, ac)
-    {
-        routines = sequence;
-        isActive = true;
-    }
+    public float fire_timer = 4f;
+    public float alt = 13;
+    private float range = 17f;
+    private bool in_shooting_range = false;
+    private bool at_home = false;
 
-    public override bool act()
+    private float time_limit = 15f;
+    public GroundPursuitAttack(Dragon d) : base(d){}
+    public override void act()
     {
-        if (routines.Count == current_routine) { isActive = false; return true; }
-        routines[current_routine].act();
-        if (!routines[current_routine].isActive)
+        fire_timer -= Time.deltaTime;
+        time_limit -= Time.deltaTime;
+        if (time_limit < 0)
         {
-            current_routine += 1;
+            isActive = false;
+            return;
         }
-        return false;
+        Vector3 goal = dragon.transform.InverseTransformPoint(dragon.target.transform.position);
+        goal.y = 0;
+
+        in_shooting_range = goal.magnitude < range * 5;
+        if (!in_shooting_range) { return; }
+
+        dragon.rb.useGravity = true;
+        if (!dragon.GroundRotateToFace(dragon.target.transform.position)) { return; }
+        dragon.ac.set_animation("Drakaris");
+        dragon.target_locked = false;
+        
+        float angle_error = Mathf.Atan2(goal.x, goal.z);
+        if (Math.Abs(angle_error) < 5 && goal.magnitude < range * 4 && fire_timer < 0)
+        {
+            dragon.firebreather.transform.LookAt(dragon.target.transform.position);
+            dragon.ShootFireball();
+            fire_timer = 2f;
+        }
     }
-
 }
-
 public class Dragon : MonoBehaviour, LivingBeing
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
     bool isAlive = true;
-    Rigidbody rb;
-    bool isAttacking = false;
+    public Rigidbody rb;
     private Animator anim;
-
-    private float health = 100;
+    private float health = 10;
     public float health_max = 100;
-
     private UnityEngine.UI.Slider healthbar;
-
-    private Transform snout_transform;
+    public GameObject firebreather;
+    private GameObject head;
     public GameObject FireballPrefab;
-    private float timer = 5f;
-
     private Routine routine;
-    private DragonAnimationController ac;
-    private float player_detection_range = 30;
-
-    private Vector3 nest_location;
-    private float protect_perimeter = 60;
+    public DragonAnimationController ac;
+    public float player_detection_range = 30;
+    public GameObject nest;
+    public GameObject target;
+    public float protect_perimeter = 40;
+    public bool target_locked = false;
+    private float rotspeed = 70;
+    private bool rth = false;
 
     void Start()
     {
@@ -347,60 +183,50 @@ public class Dragon : MonoBehaviour, LivingBeing
         Canvas canvas = GetComponentInChildren<Canvas>();
         healthbar = canvas.GetComponentInChildren<UnityEngine.UI.Slider>();
         healthbar.value = health / 100.0f;
-        snout_transform = GameObject.FindWithTag("Firebreather").transform;
-        GameObject nest = GameObject.Find("DragonNest");
-        nest_location = nest.transform.position;
+        firebreather = GameObject.FindWithTag("Firebreather");
+        head = GameObject.FindWithTag("DragonHead");
+        routine = new Idle(this);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!isAlive) { return; }
-        if (!CheckPerimeter())
-            {
-                routine = new Sequential(rb, ac,
-            new List<Routine>
-            {
-                new FlyToExactSpot(rb, ac,nest_location),
-                new Landing(rb, ac),
-                new DefaultRoutine(rb,ac)
-            }
-            );
-        }
-        if (routine == null || !routine.isActive)
+       if (!isAlive) {return;}
+       if (routine.isActive) { routine.act(); return; }
+       
+       if (!CheckPerimeter()) {  
+        routine = new FlyToHome(this); 
+        return;
+       }
+
+        if (!IsAtHome() && health < 30)
         {
-            if (CheckPlayerClose())
+            routine = new FlyToHome(this);
+            return;
+        }
+
+       if (CheckPlayerClose()) { 
+            if (health > 30)
             {
-                GameObject player = GameObject.Find("Player");
-                routine = new Sequential(rb, ac,
-                new List<Routine>
-                {
-                    new Ascend(rb, ac, 18f),
-                    new ChaseAttack(rb, ac, player)
-                }
-                );
+                routine = new AirPursuitAttack(this);
+                return;
             }
             else
             {
-                routine = new DefaultRoutine(rb, ac);
+                routine = new GroundPursuitAttack(this);
+                return;
+             
             }
-
-        }
-        routine.act();
+       }
     }
 
-    void ShootFireball()
+    public void ShootFireball()
     {
-        GameObject fbo = Instantiate(FireballPrefab, snout_transform.position, Quaternion.identity);
+        GameObject fbo = Instantiate(FireballPrefab, firebreather.transform.position, Quaternion.identity);
         Fireball fb = fbo.GetComponent<Fireball>();
-        fb.SetDirection(snout_transform.TransformDirection(Vector3.forward));
+        fb.SetDirection(firebreather.transform.TransformDirection(Vector3.forward));
 
     }
-    void LookAt(Vector3 location)
-    {
-
-    }
-
     public void TakeDamage(float dam)
     {
         if (health > dam)
@@ -420,7 +246,7 @@ public class Dragon : MonoBehaviour, LivingBeing
 
             ac.clear_animation();
             anim.Play(Animator.StringToHash("Die"));
-            Destroy(gameObject);
+            rb.freezeRotation = false;
         }
     }
 
@@ -432,15 +258,145 @@ public class Dragon : MonoBehaviour, LivingBeing
     }
     bool CheckPlayerClose()
     {
-        GameObject player = GameObject.FindWithTag("Player");
-        Vector3 delta = rb.position - player.transform.position;
+        Vector3 delta = rb.position - target.transform.position;
         delta.y = 0;
         return delta.magnitude < player_detection_range;
     }
     bool CheckPerimeter()
     {
-        Vector3 delta = rb.position - nest_location;
+        Vector3 delta = rb.position - nest.transform.position;
         delta.y = 0;
         return delta.magnitude < protect_perimeter;
+    }
+
+    bool IsAtHome()
+    {
+        Vector3 delta = rb.position - nest.transform.position;
+        delta.y = 0;
+        return delta.magnitude < 5;
+    }
+    public bool FlyTo(Vector3 location, float within=5)
+    {
+        /*
+            Fly to the set point with the PurePursuit algo. Will glitch once arrive 
+            recommended instead: FlyToandOrbit
+        */
+        Vector3 delta = rb.transform.position - location;
+        delta.y = 0;
+        if (delta.magnitude < within)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            ac.set_animation("Hover");
+            return true;
+        }
+        if (!RotateToFace(location))
+        {
+            return false;
+        }
+
+        // Fly to target with PurePursuit
+        ac.set_animation("FlyingFWD");
+        Vector3 v = new Vector3(); v.x = 0; v.y = 0;
+        v.z = 35;
+        Vector3 v_world = rb.transform.TransformVector(v);
+        v_world.y = 0;
+
+        rb.linearVelocity = v_world;
+        return false;
+    }
+
+    public bool RotateToFace(Vector3 location)
+    {
+        Vector3 goal = rb.transform.InverseTransformPoint(location);
+        goal.y = 0;
+
+        float angle_error = Mathf.Atan2(goal.x, goal.z);
+
+        if (Math.Abs(angle_error) > 0.01 && !target_locked)
+        {
+            ac.set_animation("Hover");
+            Vector3 orientation = rb.transform.rotation.eulerAngles;
+            orientation.x = 0;
+            orientation.z = 0;
+            orientation.y += rotspeed * Math.Sign(angle_error) * Time.deltaTime;
+            //rb.transform.Rotate(Vector3.up, rotspeed * Math.Sign(angle_error) * Time.deltaTime);
+            rb.transform.rotation = Quaternion.Euler(orientation);
+            return false;
+        }
+        target_locked = Math.Abs(angle_error) > Math.PI / 2 - 0.05;
+        return true;
+    }
+    public bool Land()
+    {
+        if (CheckGround())
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            ac.set_animation("IdleSimple");
+            return true;
+        }
+        ac.set_animation("Hover");
+        rb.linearVelocity = Vector3.up * -6;
+        rb.useGravity = true;
+        return false;
+    }
+
+    public bool GroundRotateToFace(Vector3 location)
+    {
+        Vector3 goal = rb.transform.InverseTransformPoint(location);
+        goal.y = 0;
+
+        float angle_error = Mathf.Atan2(goal.x, goal.z);
+
+        if (Math.Abs(angle_error) > 0.01 && !target_locked)
+        {
+            ac.set_animation("Walk");
+            rb.transform.Rotate(Vector3.up, rotspeed * Math.Sign(angle_error) * Time.deltaTime);
+            return false;
+        }
+        target_locked = Math.Abs(angle_error) > Math.PI / 2 - 0.05;
+        return true;
+    }
+    public bool WalkTo(Vector3 location, float range=5f)
+    {
+        rb.useGravity = true;
+        Vector3 delta = rb.transform.position - location;
+        delta.y = 0;
+        if (delta.magnitude < range)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            ac.set_animation("BattleStance");
+            return true;
+        }
+        if (!GroundRotateToFace(location))
+        {
+            return false;
+        }
+        ac.set_animation("Walk");
+        Vector3 v = new Vector3(); v.x = 0; v.y = 0;
+        v.z = 15;
+        Vector3 v_world = rb.transform.TransformVector(v);
+        v_world.y = 0;
+
+        rb.linearVelocity = v_world;
+        return false;
+    }
+
+    public bool AscendTo(float alt)
+    {
+        rb.useGravity = false;
+        float alt_error = rb.transform.position.y - alt;
+        if (Math.Abs(alt_error) < 1e-2)
+        {
+            Debug.Log("Ascend completed");
+            rb.linearVelocity = Vector3.zero;
+            return true;
+        }
+        ac.set_animation("Hover");
+        float set_vel = Math.Clamp(alt_error * -5, -5, 5);
+        rb.linearVelocity = Vector3.up * set_vel;
+        return false;
     }
 }

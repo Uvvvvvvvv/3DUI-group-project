@@ -187,6 +187,7 @@ public class Dragon : MonoBehaviour,LivingBeing
         head = GameObject.FindWithTag("DragonHead");
         routine = new Idle(this);
         health = health_max;
+        healthbar.value = health/health_max;
     }
 
     // Update is called once per frame

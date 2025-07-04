@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 58a43b414d5f83a4fbb9d237baf7ac48
+guid: 04d9c12e98ecf5f409b0bf9d89cd9c61
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 0
@@ -11,5 +11,5 @@ AssetOrigin:
   productId: 277464
   packageName: poly coniferous forest
   packageVersion: 1.0
-  assetPath: Assets/coniferous_forest/Materials/glass.mat
+  assetPath: Assets/Environment/coniferous_forest/DemoScene/Materials/floor.mat
   uploadId: 647221

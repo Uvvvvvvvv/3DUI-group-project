@@ -484,12 +484,12 @@ Terrain:
   m_Enabled: 1
   serializedVersion: 6
   m_TerrainData: {fileID: 15600000, guid: 52ff373bf61329e4485abcb964c1f609, type: 2}
-  m_TreeDistance: 5000
-  m_TreeBillboardDistance: 50
-  m_TreeCrossFadeLength: 5
+  m_TreeDistance: 389
+  m_TreeBillboardDistance: 210
+  m_TreeCrossFadeLength: 16.5
   m_TreeMaximumFullLODCount: 50
-  m_DetailObjectDistance: 80
-  m_DetailObjectDensity: 1
+  m_DetailObjectDistance: 35
+  m_DetailObjectDensity: 0.451
   m_HeightmapPixelError: 5
   m_SplatMapDistance: 1000
   m_HeightmapMinimumLODSimplification: 0
@@ -7074,6 +7074,14 @@ PrefabInstance:
     - target: {fileID: 1767192434, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1767192439, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: far clip plane
+      value: 2000
+      objectReference: {fileID: 0}
+    - target: {fileID: 1767192439, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: near clip plane
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 58445280694286476, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_Layer

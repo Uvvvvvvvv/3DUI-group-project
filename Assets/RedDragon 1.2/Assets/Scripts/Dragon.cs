@@ -57,8 +57,8 @@ public abstract class Routine
 public class AirPursuitAttack : Routine
 {
     public float fire_timer = 4f;
-    public float alt = 13;
-    private float range = 17f;
+    public float alt = 9;
+    private float range = 20f;
     private bool in_shooting_range = false;
 
     private float time_limit = 15f;
@@ -75,8 +75,8 @@ public class AirPursuitAttack : Routine
         }
         Vector3 goal = dragon.transform.InverseTransformPoint(dragon.target.transform.position);
         goal.y = 0;
-        if (!dragon.AscendTo(alt)) { return; }
-        if (!in_shooting_range) { in_shooting_range = dragon.FlyTo(dragon.target.transform.position, 10f);  return; }
+        if (!dragon.AscendTo(dragon.nest.transform.position.y + alt)) { return; }
+        if (!in_shooting_range) { in_shooting_range = dragon.FlyTo(dragon.target.transform.position, 15f);  return; }
         if (!dragon.RotateToFace(dragon.target.transform.position)){  return;}
         dragon.ac.set_animation("Hover");
         dragon.target_locked = false;
@@ -97,7 +97,7 @@ public class FlyToHome : Routine
     public FlyToHome(Dragon dragon) : base(dragon){}
     public override void act()
     {
-        if (!ascend_complete) { ascend_complete = dragon.AscendTo(17f); return; }
+        if (!ascend_complete) { ascend_complete = dragon.AscendTo(dragon.nest.transform.position.y + 17f); return; }
         if (!arrived) { arrived = dragon.FlyTo(dragon.nest.transform.position, 1); Debug.Log("Flying Home"); return; }
         if (!dragon.Land()) { return; }
         isActive = false;
@@ -159,7 +159,7 @@ public class Dragon : MonoBehaviour,LivingBeing
     bool isAlive = true;
     public Rigidbody rb;
     private Animator anim;
-    private float health = 10;
+    private float health;
     public float health_max = 100;
     private UnityEngine.UI.Slider healthbar;
     public GameObject firebreather;
@@ -186,6 +186,7 @@ public class Dragon : MonoBehaviour,LivingBeing
         firebreather = GameObject.FindWithTag("Firebreather");
         head = GameObject.FindWithTag("DragonHead");
         routine = new Idle(this);
+        health = health_max;
     }
 
     // Update is called once per frame
@@ -276,7 +277,7 @@ public class Dragon : MonoBehaviour,LivingBeing
         delta.y = 0;
         return delta.magnitude < 5;
     }
-    public bool FlyTo(Vector3 location, float within=5)
+    public bool FlyTo(Vector3 location, float within=10)
     {
         /*
             Fly to the set point with the PurePursuit algo. Will glitch once arrive 

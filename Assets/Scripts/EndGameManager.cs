@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Threading;
 
 public class EndGameManager : MonoBehaviour
 {
@@ -8,24 +9,43 @@ public class EndGameManager : MonoBehaviour
     public Button restartButton;
     public Button quitButton;
 
+    public float endgame_timer = 5f;
+    public bool playing = true;
+    public bool isEndscreenOn = false;
+
     void Start()
     {
-        endGameCanvas.SetActive(false);  // 默认不显示
+        endGameCanvas.SetActive(false);
 
         restartButton.onClick.AddListener(RestartGame);
         quitButton.onClick.AddListener(QuitGame);
     }
 
+    private void Update()
+    {
+        if (!playing)
+        {
+            endgame_timer -= Time.deltaTime;
+            if (endgame_timer < 0 && !isEndscreenOn)
+            {
+                endGameCanvas.SetActive(true);
+                isEndscreenOn=true; 
+            }
+        }
+    }
+
     public void TriggerEndGame()
     {
-        endGameCanvas.SetActive(true);
-        Time.timeScale = 0f; // 暂停游戏
+        playing = false;
+        Debug.Log("Endgame triggered");
     }
 
     void RestartGame()
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        Debug.Log("Game restarted");
+
     }
 
     void QuitGame()

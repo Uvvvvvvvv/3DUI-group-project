@@ -68,7 +68,7 @@ public class AirPursuitAttack : Routine
     {
         fire_timer -= Time.deltaTime;
         time_limit -= Time.deltaTime;
-        if (time_limit < 0)
+        if (time_limit < 0 || dragon.health/dragon.health_max < 0.6)
         {
             isActive = false;
             return;
@@ -159,7 +159,7 @@ public class Dragon : MonoBehaviour,LivingBeing
     bool isAlive = true;
     public Rigidbody rb;
     private Animator anim;
-    private float health;
+    public float health;
     public float health_max = 100;
     private UnityEngine.UI.Slider healthbar;
     public GameObject firebreather;
@@ -173,7 +173,8 @@ public class Dragon : MonoBehaviour,LivingBeing
     public float protect_perimeter = 40;
     public bool target_locked = false;
     private float rotspeed = 70;
-    private bool rth = false;
+
+    public EndGameManager gameManager;
 
     void Start()
     {
@@ -201,14 +202,14 @@ public class Dragon : MonoBehaviour,LivingBeing
         return;
        }
 
-        if (!IsAtHome() && health < 30)
+        if (!IsAtHome() && health/health_max < 0.6)
         {
             routine = new FlyToHome(this);
             return;
         }
 
        if (CheckPlayerClose()) { 
-            if (health > 30)
+            if (health / health_max > 0.6)
             {
                 routine = new AirPursuitAttack(this);
                 return;
@@ -250,13 +251,14 @@ public class Dragon : MonoBehaviour,LivingBeing
             ac.clear_animation();
             anim.Play(Animator.StringToHash("Die"));
             rb.freezeRotation = false;
+            gameManager.TriggerEndGame();
         }
     }
 
     bool CheckGround()
     {
         bool grounded = Physics.Raycast(transform.position, UnityEngine.Vector3.down,
-        (float)(transform.localScale.y + 0.05f));
+        (float)(transform.localScale.y + 0.1f));
         return grounded;
     }
     bool CheckPlayerClose()

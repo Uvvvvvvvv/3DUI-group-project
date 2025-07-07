@@ -456,6 +456,17 @@
             ],
             "bindings": [
                 {
+                    "name": "",
+                    "id": "54cf40b2-7ee4-4c16-a183-d981db4013fd",
+                    "path": "<XRController>{LeftHand}/deviceRotation",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
                     "name": "Quaternion Fallback",
                     "id": "61466a56-4ee4-47b1-aa6a-4806de1de5f2",
                     "path": "QuaternionFallback",
@@ -468,12 +479,12 @@
                 },
                 {
                     "name": "",
-                    "id": "54cf40b2-7ee4-4c16-a183-d981db4013fd",
-                    "path": "<TrackedDevice>/deviceRotation",
+                    "id": "65734903-9e3d-4141-adf2-513837752ba4",
+                    "path": "<XRController>{LeftHand}/devicePosition",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Rotation",
+                    "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -520,17 +531,6 @@
                     "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": true
-                },
-                {
-                    "name": "",
-                    "id": "65734903-9e3d-4141-adf2-513837752ba4",
-                    "path": "<TrackedDevice>/devicePosition",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Position",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 },
                 {
                     "name": "",

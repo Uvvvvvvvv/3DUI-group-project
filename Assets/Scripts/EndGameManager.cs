@@ -35,7 +35,7 @@ public class EndGameManager : MonoBehaviour
 
         if (isEndscreenOn && XRDialogueInput.ConfirmPressed) {
             isEndscreenOn = false;
-            endGameCanvas.SetActive(false );
+            endGameCanvas.SetActive(false);
             RestartGame();
         }
     }

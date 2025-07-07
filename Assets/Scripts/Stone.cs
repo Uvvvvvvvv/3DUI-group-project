@@ -16,7 +16,6 @@ public class Stone : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("Collision Stone");
         LivingBeing enemy = collision.gameObject.GetComponentInParent<LivingBeing>();
         if (enemy != null)
         {

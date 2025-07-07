@@ -251,6 +251,7 @@ public class Dragon : MonoBehaviour,LivingBeing
             ac.clear_animation();
             anim.Play(Animator.StringToHash("Die"));
             rb.freezeRotation = false;
+            Debug.Log("Dragon dead");
             gameManager.TriggerEndGame();
         }
     }

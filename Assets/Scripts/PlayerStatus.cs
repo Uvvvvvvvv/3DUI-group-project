@@ -11,6 +11,8 @@ public class PlayerStatus : MonoBehaviour, LivingBeing
     public bool hasSword = false;
     public bool hasRockSpell = false;
 
+    public EndGameManager endGameManager;
+
     void Awake()
     {
         currentHP = maxHP;
@@ -32,7 +34,8 @@ public class PlayerStatus : MonoBehaviour, LivingBeing
     private void Die()
     {
         Debug.Log("Player has died. Restarting level...");
-        StartCoroutine(RestartAfterDelay(2f));
+        endGameManager.TriggerEndGame();
+        //StartCoroutine(RestartAfterDelay(2f));
     }
 
     private System.Collections.IEnumerator RestartAfterDelay(float delay)

@@ -17,8 +17,8 @@ public class EndGameManager : MonoBehaviour
     {
         endGameCanvas.SetActive(false);
 
-        restartButton.onClick.AddListener(RestartGame);
-        quitButton.onClick.AddListener(QuitGame);
+        //restartButton.onClick.AddListener(RestartGame);
+        //quitButton.onClick.AddListener(QuitGame);
     }
 
     private void Update()

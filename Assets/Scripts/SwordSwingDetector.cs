@@ -60,9 +60,11 @@ public class SwordSwingDetector : MonoBehaviour
 
             // 播放命中特效
             if (hitEffect != null)
+            {
                 hitEffect.transform.position = other.ClosestPoint(transform.position);
                 hitEffect.Play();
-
+            }
+          
             // 示例：销毁敌人
             // Destroy(other.gameObject);
         }

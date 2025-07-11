@@ -34,12 +34,12 @@
                 },
                 {
                     "name": "Trigger",
-                    "type": "Button",
+                    "type": "Value",
                     "id": "3808b2c1-2f77-4a89-bc2a-34c0e0ef0ad3",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
+                    "interactions": "Press",
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Primary Button",
@@ -303,8 +303,8 @@
                 {
                     "name": "",
                     "id": "4f6dfc4a-38d9-455d-9364-3a188b0e9326",
-                    "path": "<Keyboard>/t",
-                    "interactions": "",
+                    "path": "<XRController>{LeftHand}/{PrimaryTrigger}",
+                    "interactions": "Press",
                     "processors": "",
                     "groups": "",
                     "action": "Trigger",

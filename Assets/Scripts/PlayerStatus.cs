@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class PlayerStatus : MonoBehaviour, LivingBeing
+public class PlayerStatus : MonoBehaviour, FlamableBeing
 {
     [Header("Health Settings")]
     [SerializeField] private float maxHP = 100f;
@@ -34,6 +34,7 @@ public class PlayerStatus : MonoBehaviour, LivingBeing
     private void Die()
     {
         Debug.Log("Player has died. Restarting level...");
+        endGameManager.won = false;
         endGameManager.TriggerEndGame();
         //StartCoroutine(RestartAfterDelay(2f));
     }

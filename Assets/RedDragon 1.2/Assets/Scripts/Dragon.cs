@@ -173,6 +173,9 @@ public class Dragon : MonoBehaviour,LivingBeing
 
     public EndGameManager gameManager;
 
+    public AudioSource roar;
+    public AudioSource fire;
+
     void Start()
     {
         anim = GetComponent<Animator>();
@@ -225,6 +228,7 @@ public class Dragon : MonoBehaviour,LivingBeing
         GameObject fbo = Instantiate(FireballPrefab, firebreather.transform.position, Quaternion.identity);
         Fireball fb = fbo.GetComponent<Fireball>();
         fb.SetDirection(firebreather.transform.TransformDirection(Vector3.forward));
+        fire.Play();
 
     }
     public void TakeDamage(float dam)
@@ -236,6 +240,11 @@ public class Dragon : MonoBehaviour,LivingBeing
         }
         else { health = 0; Dies(); }
         healthbar.value = health / health_max;
+
+        if(CheckPlayerClose() && !roar.isPlaying) {    
+
+        roar.Play();
+            }
     }
 
     void Dies()
@@ -249,14 +258,16 @@ public class Dragon : MonoBehaviour,LivingBeing
             anim.Play(Animator.StringToHash("Die"));
             rb.freezeRotation = false;
             Debug.Log("Dragon dead");
+            gameManager.won = true;
             gameManager.TriggerEndGame();
+
         }
     }
 
     bool CheckGround()
     {
         bool grounded = Physics.Raycast(transform.position, UnityEngine.Vector3.down,
-        (float)(transform.localScale.y + 0.1f));
+        (float)(transform.localScale.y + 0.5f));
         return grounded;
     }
     bool CheckPlayerClose()
@@ -337,11 +348,12 @@ public class Dragon : MonoBehaviour,LivingBeing
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             ac.set_animation("IdleSimple");
+            rb.useGravity = true;
             return true;
         }
         ac.set_animation("Hover");
         rb.linearVelocity = Vector3.up * -6;
-        rb.useGravity = true;
+       
         return false;
     }
 

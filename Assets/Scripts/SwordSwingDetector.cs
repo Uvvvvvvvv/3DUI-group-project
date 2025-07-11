@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.XR;
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Feedback;
 
 public class SwordSwingDetector : MonoBehaviour
 {
@@ -14,10 +16,11 @@ public class SwordSwingDetector : MonoBehaviour
 
     private Vector3 lastVelocity;
     private bool isSwinging = false;
+    InputDevice device;
 
     void Update()
     {
-        InputDevice device = InputDevices.GetDeviceAtXRNode(controllerNode);
+        device = InputDevices.GetDeviceAtXRNode(controllerNode);
         if (device.isValid && device.TryGetFeatureValue(CommonUsages.deviceVelocity, out Vector3 velocity))
         {
             float speed = velocity.magnitude;
@@ -52,11 +55,12 @@ public class SwordSwingDetector : MonoBehaviour
         if (enemy != null)
         {
             Debug.Log("🎯 Enemy Hit!");
-            enemy.TakeDamage(8);
+            enemy.TakeDamage(15);
 
-            // 播放命中音效
-            if (hitSound != null)
-                hitSound.Play();
+            if(device != null)
+            {
+                device.SendHapticImpulse(0u, 1, 0.05f);
+            }
 
             // 播放命中特效
             if (hitEffect != null)

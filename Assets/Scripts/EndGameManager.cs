@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Threading;
+using TMPro;
 
 public class EndGameManager : MonoBehaviour
 {
@@ -12,6 +13,9 @@ public class EndGameManager : MonoBehaviour
     public float endgame_timer = 5f;
     public bool playing = true;
     public bool isEndscreenOn = false;
+    public bool won = false;
+
+    public TextMeshProUGUI EndGameText;
 
     void Start()
     {
@@ -28,7 +32,14 @@ public class EndGameManager : MonoBehaviour
             endgame_timer -= Time.deltaTime;
             if (endgame_timer < 0 && !isEndscreenOn)
             {
-                endGameCanvas.SetActive(true);
+                if (won)
+                {
+                    EndGameText.text = "Congratulations, the dragon is slain! \n The village of Drakenvale thank you for your great help. \n \n Press X to restart.";
+                } else
+                {
+                    EndGameText.text = "You died! \n \n Press X to restart";
+                }
+                    endGameCanvas.SetActive(true);
                 isEndscreenOn=true; 
             }
         }

@@ -23,6 +23,7 @@ public class MusicManager : MonoBehaviour
         // ---------------------------------------------------
 
         source = GetComponent<AudioSource>();
+        source.volume = 0.03f;
         if (tracks.Length > 0) PlayTrack(0);                               // intro
     }
 
@@ -38,7 +39,7 @@ public class MusicManager : MonoBehaviour
     {
         for (float t = 0; t < fadeDuration; t += Time.deltaTime)
         {         // out-fade
-            source.volume = 1f - t / fadeDuration;
+            source.volume = 0.03f*(1f - t / fadeDuration);
             yield return null;
         }
 
@@ -48,9 +49,9 @@ public class MusicManager : MonoBehaviour
 
         for (float t = 0; t < fadeDuration; t += Time.deltaTime)
         {         // in-fade
-            source.volume = t / fadeDuration;
+            source.volume = 0.03f * t / fadeDuration;
             yield return null;
         }
-        source.volume = 1f;
+        source.volume = 0.03f;
     }
 }

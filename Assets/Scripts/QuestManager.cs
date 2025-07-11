@@ -12,6 +12,8 @@ public class QuestManager : MonoBehaviour
     private GameObject wand_visual;
     private GameObject sword;
 
+    public AudioSource wizard, warrior, captain;
+
     private void Start()
     {
         wand = GameObject.Find("XR Origin (XR Rig)/Camera Offset/Left Controller/Near-Far Interactor");
@@ -36,11 +38,27 @@ public class QuestManager : MonoBehaviour
         {
             wand.SetActive(true);
             wand_visual.SetActive(true);
+            if (!wizard.isPlaying)
+            {
+                wizard.Play();
+            }
         }
 
         else if (npcName == "Warrior")
         {
            sword.SetActive(true);
+            if (!warrior.isPlaying)
+            {
+                warrior.Play();
+            }
+        }
+
+        else if (npcName == "Captain")
+        {
+            if (!captain.isPlaying)
+            {
+                captain.Play();
+            }
         }
 
 
